@@ -11,6 +11,18 @@
 
 using namespace std;
 
+// False if they are equal
+bool check(char a, char b) {
+  return a != b;
+}
+
+bool checkHelper(char a, char b, char c, char d) {
+  if (check(a,b) && check(a,c) && check(a,d) && check(b,c) && check(b,d) && check(c,d))
+    return true;
+  else
+    return false;
+}
+
 int main() {
   ifstream cin("6.input");
   vector<string> v = {};
@@ -21,50 +33,18 @@ int main() {
 
   int sum = 0;
 
-  // for (string s : v) {
-  //   vector<char> temp;
-  //   for (char c : s) {
-  //     if (temp.size() == 4) {
-  // 	auto loc = find(temp.begin(), temp.end(), c);
-  // 	if (loc == temp.end()) {
-  // 	  cout << "first marker: " << loc - temp.begin() << "\n";
-  // 	  sum += loc - temp.begin();
-
-  // 	  for (auto x : temp)
-  // 	    cout << c << " ";
-  // 	  cout << "\n";
-  // 	  break;
-  // 	} else {
-  // 	  temp.erase(loc);
-  // 	}
-  //     } else {
-  // 	cout << "push " << c << "\n";
-  // 	temp.push_back(c);
-  //     }
-  //   }
-  // }
-
   for (int i = 0; i < v.size(); i++) {
-    set<char> set = {};
     for (int j = 0; j < v[i].size(); j++) {
       if (j > 3) {
-	auto find = set.find(j);
-	if (find == set.end()) {
-	  cout << "found at idx: " << j << "\n";
-	  sum += j;
+	if (checkHelper(v[i][j], v[i][j - 1], v[i][j - 2], v[i][j - 3])) {
+	  sum += j + 1;
 	  break;
-	} else {
-	  set.erase(v[i][j - 3]);
 	}
-      } else {
-	set.insert(v[i][j]);
       }
     }
   }
 
   cout << "Sum: " << sum << "\n";
-
-
 
   return 0;
 }
