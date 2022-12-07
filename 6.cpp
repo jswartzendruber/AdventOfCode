@@ -11,18 +11,6 @@
 
 using namespace std;
 
-// False if they are equal
-bool check(char a, char b) {
-  return a != b;
-}
-
-bool checkHelper(char a, char b, char c, char d) {
-  if (check(a,b) && check(a,c) && check(a,d) && check(b,c) && check(b,d) && check(c,d))
-    return true;
-  else
-    return false;
-}
-
 int main() {
   ifstream cin("6.input");
   vector<string> v = {};
@@ -32,14 +20,20 @@ int main() {
   }
 
   int sum = 0;
-
+  int n = 14;
   for (int i = 0; i < v.size(); i++) {
-    for (int j = 0; j < v[i].size(); j++) {
-      if (j > 3) {
-	if (checkHelper(v[i][j], v[i][j - 1], v[i][j - 2], v[i][j - 3])) {
-	  sum += j + 1;
-	  break;
-	}
+    set<char> set;
+    for (int j = n; j < v[i].size(); j++) {
+      for (int l = j - 1; l >= j - n; l--) {
+	set.insert(v[i][l]);
+      }
+
+      int size = set.size();
+      set.clear();
+      if (size == n) {
+	cout << "found : " << j << "\n";
+	sum += j;
+	break;
       }
     }
   }
