@@ -27,73 +27,61 @@ int main() {
     }
   }
 
-  int vis[v[0].size()][v[0].size()];
-  for (int i = 0; i < v.size(); i++) {
-    for (int j = 0; j < v[i].size(); j++) {
-      vis[i][j] = 0;
-    }
-  }
+  int max = 0;
+  for (int k = 1; k < v.size() - 1; k++) {
+    for (int l = 1; l < v.size() - 1; l++) {
+      int currScore = 1;
+      int unblocked;
+      int curr = trees[k][l];
 
-  // L -> R
-  for (int i = 1; i < v.size() - 1; i++) {
-    int rowMax = trees[i][0];
-    for (int j = 1; j < v[i].size() - 1; j++) {
-      if (trees[i][j] > rowMax) {
-	rowMax = trees[i][j];
-	vis[i][j]++;
+      // L -> R
+      unblocked = 0;
+      for (int j = l + 1; j < v.size(); j++) {
+	unblocked++;
+	if (trees[k][j] >= curr) {
+	  break;
+	}
+      }
+      currScore *= unblocked;
+
+      // R -> L
+      unblocked = 0;
+      for (int j = l - 1; j >= 0; j--) {
+	unblocked++;
+	if (trees[k][j] >= curr) {
+	  break;
+	}
+      }
+      currScore *= unblocked;
+
+      // B -> T
+      unblocked = 0;
+      for (int j = k + 1; j < v.size(); j++) {
+	unblocked++;
+	if (trees[j][l] >= curr) {
+	  break;
+	}
+      }
+      currScore *= unblocked;
+
+      // T -> B
+      unblocked = 0;
+      for (int j = k - 1; j >= 0; j--) {
+	unblocked++;
+	if (trees[j][l] >= curr) {
+	  break;
+	}
+      }
+      currScore *= unblocked;
+
+
+      if (currScore > max) {
+	max = currScore;
       }
     }
   }
 
-  // R -> L
-  for (int i = 1; i < v.size() - 1; i++) {
-    int rowMax = trees[i][v.size() - 1];
-    for (int j = v[i].size() - 1; j >= 1; j--) {
-      if (trees[i][j] > rowMax) {
-	rowMax = trees[i][j];
-	vis[i][j]++;
-      }
-    }
-  }
-
-  // B -> T
-  for (int i = 1; i < v.size() - 1; i++) {
-    int rowMax = trees[v.size() - 1][i];
-    // cout << "rom: " << rowMax << "\n";
-    for (int j = v[i].size() - 1; j >= 1; j--) {
-      // cout << "tr: " << trees[j][i] << " rom " << rowMax << "\n";
-      if (trees[j][i] > rowMax) {
-	rowMax = trees[j][i];
-	vis[j][i]++;
-      }
-    }
-  }
-
-  // T -> B
-  for (int i = 1; i < v.size() - 1; i++) {
-    int rowMax = trees[0][i];
-    for (int j = 1; j < v[i].size() - 1; j++) {
-      if (trees[j][i] > rowMax) {
-	rowMax = trees[j][i];
-	vis[j][i]++;
-      }
-    }
-  }
-
-  int visible = v.size() * 4 - 4;
-  for (int i = 1; i < v.size() - 1; i++) {
-    for (int j = 1; j < v[i].size() - 1; j++) {
-      if (vis[i][j] > 0) {
-	visible++;
-      }
-    }
-  }
-
-  for (int i = 0; i < v.size(); i++) {
-    cout << trees[i][v.size() - 1] << " ";
-  }
-
-  cout << "Visible: " << visible << "\n";
+  cout << "Max: " << max << "\n";
 
   return 0;
 }
