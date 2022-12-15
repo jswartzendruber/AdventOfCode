@@ -10,12 +10,9 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
+#include <cmath>
 
 using namespace std;
-
-int flatten(int x, int y) {
-  return (x * 100) + y;
-}
 
 int main() {
   ifstream cin("9.input");
@@ -29,7 +26,15 @@ int main() {
   int chy = 0;
   int ctx = 0;
   int cty = 0;
-  unordered_set<int> s;
+  unordered_set<string> s;
+
+  int len = 10;
+  int rx[len];
+  int ry[len];
+
+  for (int i = 0; i < 10; i++) rx[i] = 0;
+  for (int i = 0; i < 10; i++) ry[i] = 0;
+
   for (int i = 0; i < v.size(); i++) {
     string word;
     istringstream ss = istringstream(v[i], istringstream::in);
@@ -37,87 +42,34 @@ int main() {
       string direction = word;
       ss >> word;
       int dist = stoi(word);
-      cout << "dir: " << direction << " dist: " << dist << "\n";
+
       for (int j = 0; j < dist; j++) {
 	if (direction == "R") {
-	  chy++;
+	  rx[0]++;
 	} else if (direction == "U") {
-	  chx++;
+	  ry[0]++;
 	} else if (direction == "D") {
-	  chx--;
+	  ry[0]--;
 	} else if (direction == "L") {
-	  chy--;
+	  rx[0]--;
 	}
 
-	int t = flatten(ctx, cty);
-	int h = flatten(chx, chy);
+	for (int r = 1; r < len; r++) {
+	  int dx = rx[r - 1] - rx[r];
+	  int dy = ry[r - 1] - ry[r];
+	  int dist = max(abs(dx), abs(dy));
 
-	// . . .  If tail is in this grid, no change.
-	// . H .
-	// . . .
-	bool skip = false;
-	for (int k = chx - 1; k <= chx + 1; k++) {
-	  for (int l = chy - 1; l <= chy + 1; l++) {
-	    if (t == flatten(k, l)) {
-	      skip = true;
-	    }
+	  if (dist > 1) {
+	    if (ry[r - 1] > ry[r]) ry[r]++;
+	    if (ry[r - 1] < ry[r]) ry[r]--;
+	    if (rx[r - 1] > rx[r]) rx[r]++;
+	    if (rx[r - 1] < rx[r]) rx[r]--;
 	  }
 	}
 
-	// Two steps directly up, down, left, or right, move  tail once in that direction
-	if (!skip) {
-	  if (ctx == chx || cty == chy) {
-	    if (h == t + 2) {
-	      cty++; // R
-	      cout << "r\n";
-	    } else if (h == t - 2) {
-	      cty--; // L
-	      cout << "l\n";
-	    } else if (h == t - 200) {
-	      ctx--; // B
-	      cout << "b\n";
-	    } else if (h == t + 200) {
-	      ctx++; // T
-	      cout << "t\n";
-	    }
-	  } else {
-	    // Move diagonally
-	    if (cty < chy && ctx < chx) {
-	      // cout << "rightup\n";
-	      cty++;
-	      ctx++;
-	    } else if (cty > chy && ctx > chx) {
-	      // cout << "leftdown\n";
-	      cty--;
-	      ctx--;
-	    } else if (cty > chy && ctx < chx) {
-	      // cout << "leftup\n";
-	      cty--;
-	      ctx++;
-	    } else if (cty < chy && ctx < chx) {
-	      // cout << "rightdown\n";
-	      cty--;
-	      ctx++;
-	    }
-	  }
-	}
-
-	cout << "T: " << ctx << "," << cty << " H: " << chx << "," << chy << "\n";
-	// cout << "ins: " << ctx << "," << cty << "\n";
-	s.insert(flatten(ctx, cty));
+	s.insert(to_string(rx[len - 1])+":"+to_string(ry[len - 1]));
       }
     }
-  }
-
-  for (int i = 6; i >= 0; i--) {
-    for (int j = 0; j < 6; j++) {
-      if (s.find(flatten(i, j)) != s.end()) {
-	cout << " #";
-      } else {
-	cout << " .";
-      }
-    }
-    cout << "\n";
   }
 
   cout << "Positions: " << s.size() << "\n";
