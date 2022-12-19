@@ -18,35 +18,29 @@ struct Atom {
   vector<int> list;
 };
 
-vector<int> matchIntList(string in) {
-  cout << "MatchIntList: " << in << "\n";
-  int idx = 1; // Past first bracket
-
-  int start = 0;
-  int end = 0;
-  vector<int> list;
-  while (in[idx] != ']') { // Until bracket
-    if (isdigit(in[idx])) {
-      idx++;
-    } else {
-      end = idx;
-      cout << "substr: " << in.substr(start, end) << "\n";
-      list.push_back(stoi(in.substr(start, end)));
-      idx++;
-      start = idx;
-    }
-  }
-
-  return list;
-}
-
-Atom matchAtom(string in) {
-  cout << "MatchAtom: " << in << "\n";
-  if (in[0] == '[') {
-    return matchAtom(in.substr(1));
+Atom *matchList(string in) {
+  Atom *atom = new Atom;
+  if (in[1] == '[') {
+    return matchList(in.substr(1));
   } else {
-    Atom atom;
-    atom.list = matchIntList(in);
+    string sublist = in.substr(1);
+    int len = 0;
+    while (len < sublist.size()) {
+      if (sublist[len] == ']') {
+	break;
+      } else {
+	len++;
+      }
+    }
+    sublist = sublist.substr(0, len);
+    cout << "sublist: " << sublist << "\n";
+
+    istringstream values(sublist, istringstream::in);
+    string chunk;
+    while (getline(values, chunk, ',')) {
+      atom->list.push_back(stoi(chunk));
+    }
+
     return atom;
   }
 }
@@ -60,11 +54,13 @@ int main() {
   }
 
   string in = "[[10,12,8],[13,14]]";
-  Atom a = matchAtom(in);
-  for (int i : a.list) {
+  cout << "in: " << in << "\n";
+  Atom *a = matchList(in);
+  for (int i : a->list) {
     cout << i << ",";
   }
   cout << "\n";
+  delete a;
 
   for (int i = 0; i < v.size(); ++i) {
     if (v[i][0] == '[') {
